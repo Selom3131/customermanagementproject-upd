@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd ">
+    <munit:config name="customermngmt-apikit-test.xml" />
+    
+    <http:request-config name="HTTP_Request_Configuration" basePath="/api">
+        <http:request-connection host="localhost" port="8081" connectionIdleTimeout="300000"/>
+    </http:request-config>
+    
+    <munit:test name="3-get:\customer:customermngmt-config-200-application\json-FlowTest" description="Verifying functionality of [get:\customer:customermngmt-config-200-application\json]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="customermngmt-main" />
+            <munit:enable-flow-source value="get:\customer:customermngmt-config" />
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="/customer">
+                <http:headers>#[{"Accept":"application/json"}]</http:headers>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 200" />
+<!-- [STUDIO:"Assert That - Payload is Expected"]            <munit-tools:assert-that expression="#[output application/java &#45;&#45;-write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_200_customer_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" /> [STUDIO] -->
+        </munit:validation>
+    </munit:test>
+    
+    
+    <munit:test name="1-get:\customer:customermngmt-config-404-application\json-FlowTest" description="Verifying functionality of [get:\customer:customermngmt-config-200-application\json]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="customermngmt-main" />
+            <munit:enable-flow-source value="get:\customer:customermngmt-config" />
+        </munit:enable-flow-sources>
+		<munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="GET" path="/customer">
+                <http:headers>#[{"Accept":"application/json"}]</http:headers>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 200" />
+<!-- [STUDIO:"Assert That - Payload is Expected"]            <munit-tools:assert-that expression="#[output application/java &#45;&#45;-write(payload, 'application/json') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/get_200_customer_application_json.json'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" /> [STUDIO] -->
+        </munit:validation>
+    </munit:test>
+    
+    
+	<munit:test name="2-post:\customer:application\json:customermngmt-config-201-text\plain-FlowTest" description="Verifying functionality of [post:\customer:application\json:customermngmt-config-201-text\plain]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="customermngmt-main" />
+            <munit:enable-flow-source value="post:\customer:application\json:customermngmt-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_customer_application_json.json')]" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="POST" path="/customer">
+                <http:headers>#[{"Accept":"text/plain","Content-Type":"application/json"}]</http:headers>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 201" />
+            <munit-tools:assert-that expression="#[output application/java ---write(payload, 'text/plain') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/post_201_customer_text_plain.txt'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" />
+        </munit:validation>
+    </munit:test>
+    
+    <munit:test name="4-delete:\customer:customermngmt-config-200-text\plain-FlowTest" description="Verifying functionality of [delete:\customer:customermngmt-config-200-text\plain]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="customermngmt-main" />
+            <munit:enable-flow-source value="delete:\customer:customermngmt-config" />
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="DELETE" path="/customer">
+                <http:headers><![CDATA[#[{"Accept":"text/plain"}]]]></http:headers>
+                <http:query-params><![CDATA[#[{"clientKey":"3702268083"}]]]></http:query-params>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 200" />
+<!-- [STUDIO:"Assert That - Payload is Expected"]            <munit-tools:assert-that expression="#[payload as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/delete_200_customer_text_plain.txt'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" /> [STUDIO] -->
+        </munit:validation>
+    </munit:test>
+	<munit:test name="5-delete:\customer:customermngmt-config-404-text\plain-FlowTest" description="Verifying functionality of [delete:\customer:customermngmt-config-200-text\plain]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="customermngmt-main" />
+            <munit:enable-flow-source value="delete:\customer:customermngmt-config" />
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="DELETE" path="/customer">
+                <http:headers><![CDATA[#[{"Accept":"text/plain"}]]]></http:headers>
+                <http:query-params><![CDATA[#[{"clientKey":"75088577437"}]]]></http:query-params>
+				<http:response-validator >
+					<http:success-status-code-validator values="404" />
+				</http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(404)]" message="The HTTP Status code is not correct!" doc:name="Assert That Status Code is 404" />
+<!-- [STUDIO:"Assert That - Payload is Expected"]            <munit-tools:assert-that expression="#[payload as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/delete_200_customer_text_plain.txt'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" /> [STUDIO] -->
+        </munit:validation>
+    </munit:test>
+    
+    <munit:test name="6-post:\customer:application\json:customermngmt-config-400-text\plain-FlowTest" description="Verifying functionality of [post:\customer:application\json:customermngmt-config-201-text\plain]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="customermngmt-main" />
+            <munit:enable-flow-source value="post:\customer:application\json:customermngmt-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_customer_bad_request_application_json.json')]" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="POST" path="/customer">
+                <http:headers><![CDATA[#[{"Accept":"text/plain","Content-Type":"application/json"}]]]></http:headers>
+				<http:response-validator >
+					<http:success-status-code-validator values="400" />
+				</http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]" message="Bad request!" doc:name="Assert That Status Code is 400" />
+<!-- [STUDIO:"Assert That - Payload is Expected"]            <munit-tools:assert-that expression="#[output application/java &#45;&#45;-write(payload, 'text/plain') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/post_201_customer_text_plain.txt'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" /> [STUDIO] -->
+        </munit:validation>
+    </munit:test>
+    
+    <munit:test name="8-post:\customer:application\json:customermngmt-config-404-text\plain-FlowTest" description="Verifying functionality of [post:\customer:application\json:customermngmt-config-201-text\plain]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="customermngmt-main" />
+            <munit:enable-flow-source value="post:\customer:application\json:customermngmt-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_customer_bad_request_application_json.json')]" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="POST" path="/custome">
+                <http:headers><![CDATA[#[{"Accept":"text/plain","Content-Type":"application/json"}]]]></http:headers>
+				<http:response-validator >
+					<http:success-status-code-validator values="404" />
+				</http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(404)]" message="Bad request!" doc:name="Assert That Status Code is 404" />
+<!-- [STUDIO:"Assert That - Payload is Expected"]            <munit-tools:assert-that expression="#[output application/java &#45;&#45;-write(payload, 'text/plain') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/post_201_customer_text_plain.txt'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" /> [STUDIO] -->
+        </munit:validation>
+    </munit:test>
+    
+    <munit:test name="9-post:\customer:application\json:customermngmt-config-method-not-allowed-text\plain-FlowTest" description="Verifying functionality of [post:\customer:application\json:customermngmt-config-201-text\plain]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="customermngmt-main" />
+            <munit:enable-flow-source value="post:\customer:application\json:customermngmt-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_customer_bad_request_application_json.json')]" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="PUT" path="/customer">
+                <http:headers><![CDATA[#[{"Accept":"text/plain","Content-Type":"application/json"}]]]></http:headers>
+				<http:response-validator >
+					<http:success-status-code-validator values="405" />
+				</http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(405)]" message="Method not Allowed" doc:name="Assert That Status Code is 405" />
+<!-- [STUDIO:"Assert That - Payload is Expected"]            <munit-tools:assert-that expression="#[output application/java &#45;&#45;-write(payload, 'text/plain') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/post_201_customer_text_plain.txt'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" /> [STUDIO] -->
+        </munit:validation>
+    </munit:test>
+    
+    <munit:test name="7-post:\customer:application\json:customermngmt-config-unsupported-media-text\plain-FlowTest" description="Verifying functionality of [post:\customer:application\json:customermngmt-config-201-text\plain]">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="customermngmt-main" />
+            <munit:enable-flow-source value="post:\customer:application\json:customermngmt-config" />
+        </munit:enable-flow-sources>
+        <munit:behavior>
+            <set-payload value="#[MunitTools::getResourceAsString('scaffolder/request/post_customer_bad_request_application_json.json')]" />
+        </munit:behavior>
+        <munit:execution>
+            <http:request config-ref="HTTP_Request_Configuration" method="POST" path="/customer">
+                <http:headers><![CDATA[#[{"Accept":"text/plain","Content-Type":"application/xml"}]]]></http:headers>
+				<http:response-validator >
+					<http:success-status-code-validator values="415" />
+				</http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]" message="Method not allowed!" doc:name="Assert That Status Code is 415" />
+<!-- [STUDIO:"Assert That - Payload is Expected"]            <munit-tools:assert-that expression="#[output application/java &#45;&#45;-write(payload, 'text/plain') as String]" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('scaffolder/response/post_201_customer_text_plain.txt'))]" message="The response payload is not correct!" doc:name="Assert That - Payload is Expected" /> [STUDIO] -->
+        </munit:validation>
+    </munit:test>
+    
+    
+    
+
+</mule>

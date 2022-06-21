@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="formattedCreateCustomerJson" format="json">
+      <types:shape format="weave" example="formattedCreateCustomerJson.json"><![CDATA[%dw 2.0
+
+type formattedCreateCustomerJson = {|
+  clientKey: Number {"typeId": "double"}, 
+  firstName: String, 
+  middleName: String, 
+  lastName: String, 
+  birthDate: Number {"typeId": "double"}, 
+  height: Number {"typeId": "double"}, 
+  weight: Number {"typeId": "int"}, 
+  billingStreet: String, 
+  billingCity: String, 
+  billingState: String, 
+  billingPostalCode: String, 
+  billingCountryCode: String, 
+  createdDate: Number {"typeId": "double"}
+|} {"example": "{\\\"clientKey\\\":85890096474,\\\"firstName\\\":\\\"Kossivi\\\",\\\"middleName\\\":\\\"Selom\\\",\\\"lastName\\\":\\\"Afeli\\\",\\\"birthDate\\\":629856000000,\\\"height\\\":1.83,\\\"weight\\\":83,\\\"billingStreet\\\":\\\"Rue des Ecoliers\\\",\\\"billingCity\\\":\\\"Cyber City\\\",\\\"billingState\\\":\\\"Ebene\\\",\\\"billingPostalCode\\\":\\\"7795\\\",\\\"billingCountryCode\\\":\\\"230\\\",\\\"createdDate\\\":1655510400000}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#aceb11a2-d1b1-42e3-b3ea-f143c8d52268">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="formattedCreateCustomerJson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

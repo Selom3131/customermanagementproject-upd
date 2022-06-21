@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="customermngmt-test-suite.xml" />
+	<munit:test name="customermngmt-test-suite-customermngmt-mainTest" doc:id="e944c821-a46c-4797-a1d3-8dd6aaa48dde" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to customermngmt-main" doc:id="d40cfdee-27c2-4f4f-a8bb-d2b4d37c20ee" name="customermngmt-main"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="714cfad5-da47-4a9f-a1d7-7ff53acdfce8" message="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

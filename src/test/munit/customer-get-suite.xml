@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="customer-get-suite.xml" />
+	<munit:test name="get:\customer:success-existing-records-test" doc:id="45950d86-43a8-4df5-8f0b-197a229f796d" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="fec680d1-43a6-45c5-98fd-519a743cfb58" >
+				<munit:payload value="#[readUrl('classpath://getcustomersuccessexistingrecordstest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getcustomersuccessexistingrecordstest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getcustomersuccessexistingrecordstest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\customer:customermngmt-config" doc:id="c16ce329-117a-4c9b-9010-6a39a1a1f6f4" name="get:\customer:customermngmt-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="a43a1b58-dfad-447a-9212-1ab630394fd7" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getcustomersuccessexistingrecordstest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:assert doc:name="Assert variables" doc:id="bfed5569-f3e3-424a-9fc1-0a376722acac" message="The variables do not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getcustomersuccessexistingrecordstest::assert_expression_variables
+---
+assert_expression_variables::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="691de17d-58de-4258-a560-0280d06f4a1d" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b6930fcb-86b2-42cc-bbf5-ca9b2630062b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Read" doc:id="8fb08062-00e2-4811-96ce-2a2ea1ba9905" processor="file:read" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c049c9bf-a878-4854-8bab-53ef99062725" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

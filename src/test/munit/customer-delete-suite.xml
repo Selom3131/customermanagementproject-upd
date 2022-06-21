@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-suite.xml" />
+	<munit:test name="delete:\customer:delete-with-invalid-clientkey-test" doc:id="747530a1-d4ce-4643-a9a7-9c4e93fc21a5" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="5f905a6f-5220-4bb1-8001-1b2f17c3e81f" >
+				<munit:attributes value="#[readUrl('classpath://deletecustomerdeletewithinvalidclientkeytest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to delete:\customer:customermngmt-config" doc:id="f44add4a-5414-4692-9912-dcda7640c6eb" name="delete:\customer:customermngmt-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="f8e505ca-9dbe-43c2-af86-eefbfcb466cb" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import deletecustomerdeletewithinvalidclientkeytest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:assert doc:name="Assert variables" doc:id="47d90e21-256b-4182-95ae-05ddb55e514d" message="The variables do not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import deletecustomerdeletewithinvalidclientkeytest::assert_expression_variables
+---
+assert_expression_variables::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Set Variable clientKey" doc:id="1e7c137e-47b4-45a4-92b9-9be2f89eb6ce" processor="set-variable" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="96092611-f640-4684-a410-b3359a933aba" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Set Variable" doc:id="59184e2f-1fc6-4df6-8776-32b08774d67f" processor="set-variable" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4c6c702f-561f-4da2-bc3f-d8f62f6676ec" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Read" doc:id="a63654b1-4aae-4948-93c6-e7d4cb945404" processor="file:read" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="99b6418c-1027-4381-86ca-126263ced880" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="bdaf48bd-4451-4131-8fa9-1caec50b6f26" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ba92dc77-9cf0-4e1d-bb1e-9d9535db80a5" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="da081d86-e345-4863-a858-41241a068055" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a44a9a56-d81d-4d4d-b092-5ffc544cb5b0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="delete:\customer:delete-customer-with-valid-clientkey-test" doc:id="2ceba270-7ff7-435d-95cf-bddef3d25ca3" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="951e98ee-2dcb-4a78-b806-8e9eec1fb8a1" >
+				<munit:attributes value="#[readUrl('classpath://deletecustomerdeletecustomerwithvalidclientkeytest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to delete:\customer:customermngmt-config" doc:id="cc50b737-4bdd-44ef-bc0a-c125b72b4785" name="delete:\customer:customermngmt-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="cf122371-8cef-4aaa-95b8-7078210ce758" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import deletecustomerdeletecustomerwithvalidclientkeytest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:assert doc:name="Assert variables" doc:id="62a7a9ee-4c94-4657-9b5e-d167ef5cbaf8" message="The variables do not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import deletecustomerdeletecustomerwithvalidclientkeytest::assert_expression_variables
+---
+assert_expression_variables::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Set Variable clientKey" doc:id="6d77d801-0b9c-4168-a208-1f7d86f9f108" processor="set-variable" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="96092611-f640-4684-a410-b3359a933aba" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Read" doc:id="e3254095-6e37-4ce1-83c1-9b720eb26108" processor="file:read" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="99b6418c-1027-4381-86ca-126263ced880" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="945c3eeb-6788-46d5-9851-929d9cb5fd3e" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ba92dc77-9cf0-4e1d-bb1e-9d9535db80a5" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="447501cd-4637-4998-b9b4-c98dd919b3fb" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0d676a15-dfe1-41e9-961d-b1921931e5c9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Set Payload" doc:id="a372417c-4aa0-4aba-85d9-3cfb6bc1e719" processor="set-payload" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="bdfe495e-ecd5-499a-8851-54aa4cd467e1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Write" doc:id="bb1670f8-38ee-4145-9fd6-cd67f5f0e3e5" processor="file:write" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1594c638-16a4-477c-9535-a381f3daccf7" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="aa16243d-20ca-4d41-89ff-41986be2d57f" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="00ff00b6-4201-48d5-99a1-8b87d864560a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

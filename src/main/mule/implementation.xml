@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="delete:\customer:customermngmt-config">
+        <set-variable value="#[attributes.queryParams.clientKey]" doc:name="Set Variable clientKey" doc:id="96092611-f640-4684-a410-b3359a933aba" variableName="clientKey"/>
+		<try doc:name="Try" doc:id="ba92cb63-08ed-4c9a-a9c4-bb92f65baf2b" >
+			<file:read doc:name="Read" doc:id="99b6418c-1027-4381-86ca-126263ced880" config-ref="File_Config" path="${file.path}"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7b49917d-9503-413c-b250-debe322055aa" type="FILE:ILLEGAL_PATH">
+					<set-variable value="404" doc:name="httpStatus Code" doc:id="c57a6778-4913-4d00-b8a0-338bf616a3c5" variableName="httpStatus" />
+					<set-variable value='#["No customer found"]' doc:name="Set Variable httpResponsePhrase" doc:id="78836d99-de45-4544-9ed3-46e07d479a24" variableName="httpResponsePhrase" />
+					<ee:transform doc:name="Transform Message" doc:id="6bd0bde9-f15d-4eb9-a161-f3dcbedc0213" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message : "No customer found"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="ba92dc77-9cf0-4e1d-bb1e-9d9535db80a5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="searchRes" ><![CDATA[%dw 2.0
+output application/java
+---
+sizeOf(payload filter (customer, index) -> (customer.clientKey == vars.clientKey))]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="0d676a15-dfe1-41e9-961d-b1921931e5c9" message="#[payload]" />
+		<choice doc:name="Choice" doc:id="a18d3c96-03ca-40e5-84c3-e82bb64ac963" >
+			<when expression="#[vars.searchRes &gt; 0]">
+				<ee:transform doc:id="00ff00b6-4201-48d5-99a1-8b87d864560a">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/csv
+---
+payload filter (customer, index) -> (customer.clientKey != vars.clientKey)]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+				<try doc:name="Try" doc:id="4fa1affd-f2e5-4224-bcb1-bcb8a06291bb">
+					<file:write doc:name="Write" doc:id="1594c638-16a4-477c-9535-a381f3daccf7" config-ref="File_Config" path="${file.path}" />
+					<error-handler>
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e15fb47d-3099-4589-b722-2ed88f713d59">
+							<ee:transform doc:name="Transform Message" doc:id="0e25b7d5-5eee-4518-b4b8-9b264fbdda7e">
+								<ee:message>
+									<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message : "Internal error"
+}]]></ee:set-payload>
+								</ee:message>
+								<ee:variables>
+									<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
+output application/java
+---
+500]]></ee:set-variable>
+								</ee:variables>
+							</ee:transform>
+						</on-error-propagate>
+					</error-handler>
+				
+</try>
+				<set-payload value='#["Deleted"]' doc:name="Set Payload" doc:id="bdfe495e-ecd5-499a-8851-54aa4cd467e1" mimeType="text/plain"/>
+			
+</when>
+			<otherwise >
+				<set-variable value="404" doc:name="Set Variable" doc:id="4c6c702f-561f-4da2-bc3f-d8f62f6676ec" variableName="httpStatus"/>
+				<ee:transform doc:name="Transform Message" doc:id="a44a9a56-d81d-4d4d-b092-5ffc544cb5b0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "No customer found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+    </flow>
+    <flow name="get:\customer:customermngmt-config">
+        <try doc:name="Try" doc:id="b3d1956a-3bdb-48fc-a2ec-157d00cc09f2" >
+			<file:read doc:name="Read" doc:id="c049c9bf-a878-4854-8bab-53ef99062725" config-ref="File_Config" path="${file.path}" targetValue="#[payload default []]"/>
+			<error-handler>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c2070e6d-6536-466a-af9e-882dbe26a11a" >
+					<set-variable value="404" doc:name="Set httpStatus Code" doc:id="21218904-772f-42de-b8c7-a534559186dd" variableName="httpStatus"/>
+					<set-variable value='#["No customer found"]' doc:name="Set Variable" doc:id="7b23f396-574e-4292-b6d6-997fc53f8a29" variableName="httpResponsePhrase"/>
+					<ee:transform doc:name="Transform Message" doc:id="94659756-3efa-435a-98d1-2e8dba3acc26" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message : "No customer found"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="b6930fcb-86b2-42cc-bbf5-ca9b2630062b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	totalRecords: sizeOf(payload),
+	customers: payload map({
+		clientKey:  $.clientKey,
+		firstName: $.firstName,
+		middleName:  $.middleName,
+		lastName:  $.lastName,
+		height:  $.height as Number,
+		weight:  $.weight as Number,
+		billingAddress:  $.billingStreet ++ ", " 
+		++ $.billingCity ++ ", "
+		++ $.billingState ++ ", "
+		++ $.billingPostalCode ++ ", "
+		++ $.billingCountryCode,
+		birthDate:  $.birthDate as Number as DateTime {unit: "milliseconds"} as Date {format: "dd.MM.yyyy"}
+	})
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+
+if (sizeOf(payload) > 0)
+200
+else 
+404]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		
+    </flow>
+    <flow name="post:\customer:application\json:customermngmt-config">
+		<set-variable value="#[(payload.birthDate as Date {format: &quot;yyyy-MM-dd&quot;}  as String {format: &quot;yyyy-MM-dd&quot;} ++ 'T00:00:00Z') as DateTime as Number {unit: &quot;milliseconds&quot;}]" doc:name="formattedBirthDate" doc:id="c9acb662-1165-4c4a-8f57-3530726685af" variableName="formattedBirthDate"/>
+		<ee:transform doc:name="Transform Message" doc:id="8e2dca8e-4272-4df4-b4e4-d4eac0acec89" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var birthDate = payload.birthDate
+---
+{
+	clientKey: randomInt(100000000000) as Number,
+	firstName: payload.firstName,
+	middleName: payload.middleName,
+	lastName: payload.lastName,
+	birthDate: vars.formattedBirthDate as Number,
+	height: payload.height,
+	weight: payload.weight,
+	billingStreet: payload.billingStreet,
+	billingCity: payload.billingCity,
+	billingState: payload.billingState,
+	billingPostalCode: payload.billingPostalCode,
+	billingCountryCode: payload.billingCountryCode,
+	createdDate: (now() as Date {
+		format: "yyyy-MM-dd"
+	} as String {
+		format: "yyyy-MM-dd"
+	} ++ 'T00:00:00Z') as DateTime as Number {
+		unit: "milliseconds"
+	}
+}
+
+//++ payload 
+//- 'birthDate'
+//++ { birthDate: (birthDate as Date {format: "yyyy-MM-dd"}  as String {format: "yyyy-MM-dd"} ++ 'T00:00:00Z') as DateTime as Number {unit: "milliseconds"}}
+//++ {createdDate: ( now() as Date {format: "yyyy-MM-dd"} as String {format: "yyyy-MM-dd"} ++ 'T00:00:00Z') as DateTime as Number {unit: "milliseconds"}}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="c51d34fe-749c-417e-8943-9ebedb2192ce" message="#[message.payload]"/>
+		<try doc:name="Try" doc:id="68821b89-fef6-478f-81ed-a00d377f5457" >
+			<file:read doc:name="Read" doc:id="0b790500-b9fc-4c75-ab6a-db5eab368660" config-ref="File_Config" path="${file.path}" target="data" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ad7cb57a-8515-47fa-995d-b29769e54d6b" >
+					<flow-ref doc:name="Flow Reference" doc:id="f8692f02-acfb-4157-8f34-3e4db513daba" name="noFileFoundErrorSub_Flow"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+        <choice doc:name="Choice" doc:id="af2f6220-0cce-409e-9dd2-23009fc93a62">
+            <when expression="#[sizeOf(vars.data) &gt;0]">
+                <ee:transform doc:name="Transform Message" doc:id="38be1cb1-82a1-4a52-a7b1-8175ed4e40f5">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/csv header=false
+---
+payload]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Transform Message" doc:id="e6797b21-008a-448f-ae6e-666e5ef8fb7e">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+        <logger level="INFO" doc:name="Logger" doc:id="5dd0d049-68e9-457a-9fab-85aefbc0d2de" message="#[message.payload]" category="PAYLOAD" />
+        <file:write doc:id="c022ef17-e0e0-4ed5-96e1-d5c75364fd07" config-ref="File_Config" path="${file.path}" mode="APPEND" />
+        <set-variable value="201" doc:name="Set httpStatus Variable " doc:id="b633a503-025c-4c32-87bc-f05ce73a6a83" variableName="httpStatus"/>
+		<set-payload value="#[&quot;Created&quot;]" doc:name="Set Payload" doc:id="3ab7be34-f81e-43db-8a3e-abfc5646776b" />
+        <error-handler>
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="02492841-244d-4219-a0dd-2451ebae86a3" type="FILE:ILLEGAL_PATH">
+                <set-variable value="0" doc:name="Set Variable" doc:id="1e43b20f-f03e-44cc-9298-49c86d1e9c75" variableName="fileSize" />
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+	<sub-flow name="noFileFoundErrorSub_Flow" doc:id="5b6dd6a9-91d2-42b4-803d-e9d8157aba9a" >
+		<logger level="INFO" doc:name="Logger" doc:id="8a56efdb-e9be-413b-8401-d2c6f0ef12ce" message="#[message.payload]"/>
+		<set-variable value="#[[]]" doc:name="Set Variable" doc:id="d943aa85-eb14-4691-a27e-d7ce080ea528" variableName="fileSize"/>
+	</sub-flow>
+	
+	</mule>

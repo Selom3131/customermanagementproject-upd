@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="customer-post-suite.xml" />
+	<munit:test name="post:\customer:success-create-test" doc:id="e5856c93-afcb-4280-a9ba-c6c4b0c0a1e1" >
+		<munit:behavior >
+			<munit-tools:spy doc:name="Spy formattedBirthDate" doc:id="ccb5fdfd-8a05-4a9b-912f-259e5639521a" processor="set-variable">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c9acb662-1165-4c4a-8f57-3530726685af" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="d8cf83c3-c5da-4413-9dba-c67d3e0c1c6a" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcustomersuccesscreatetest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="11204dc2-e333-4fd9-bf8f-4ae3b71ad489" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcustomersuccesscreatetest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+					<munit-tools:assert doc:name="Assert variables" doc:id="84dfe614-7d8c-435c-b813-19f67d1a75db" message="The variables do not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcustomersuccesscreatetest::spy_assert_variables
+---
+spy_assert_variables::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="74109037-bca0-4dfc-a739-3b0b8851a7bc" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postcustomersuccesscreatetest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postcustomersuccesscreatetest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postcustomersuccesscreatetest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\customer:application\json:customermngmt-config" doc:id="fbc8fb43-3d26-4d7b-8b9e-33e3f23be27f" name="post:\customer:application\json:customermngmt-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="710fa223-6380-4c63-8d8e-bf813090b4b1" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcustomersuccesscreatetest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:assert doc:name="Assert variables" doc:id="25a0702b-9a1c-44e7-ae79-3e647e2b5ed1" message="The variables do not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcustomersuccesscreatetest::assert_expression_variables
+---
+assert_expression_variables::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="c68c05bb-fb3a-4830-8c7b-01865d04f45c" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c51d34fe-749c-417e-8943-9ebedb2192ce" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="3d0f90ea-1e71-4dd4-8453-b7da58582631" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8e2dca8e-4272-4df4-b4e4-d4eac0acec89" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Read" doc:id="31d9726a-a5e9-468c-b7e6-f1b518315105" processor="file:read" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0b790500-b9fc-4c75-ab6a-db5eab368660" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="3b9c89bc-b023-4d57-b955-30a5ee4b552b" processor="ee:transform" atMost="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e6797b21-008a-448f-ae6e-666e5ef8fb7e" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Set Payload" doc:id="ca5cc44b-1a56-4b2c-bec9-00e071d0b295" processor="set-payload" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="3ab7be34-f81e-43db-8a3e-abfc5646776b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Set httpStatus Variable " doc:id="39389005-28d4-435c-9a74-cf4e988b5ecb" processor="set-variable" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b633a503-025c-4c32-87bc-f05ce73a6a83" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Write" doc:id="69ff2f2e-9b9d-4923-b67d-a588c46d5f19" processor="file:write" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c022ef17-e0e0-4ed5-96e1-d5c75364fd07" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="8748cc73-c0ad-4513-8b1b-d1b39aa92767" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="5dd0d049-68e9-457a-9fab-85aefbc0d2de" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify formattedBirthDate" doc:id="51cfd161-9869-4158-8c0b-cba034b7b2cf" processor="set-variable" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c9acb662-1165-4c4a-8f57-3530726685af" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
