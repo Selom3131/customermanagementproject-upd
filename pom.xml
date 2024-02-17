@@ -32,6 +32,18 @@
 				<extensions>true</extensions>
 				<configuration>
 					<classifier>mule-application</classifier>
+					<cloudHubDeployment>
+				      <uri>https://anypoint.mulesoft.com</uri>
+				      <muleVersion>4.5.2</muleVersion>
+				      <username>ksa24</username>
+				      <password>Sthis@3131</password>
+				      <applicationName>customermanagementproject</applicationName>
+				      <environment>Sandbox</environment>
+				      <region>${region}</region>
+				      <workers>1</workers>
+				      <workerType>Micro</workerType>
+				      <objectStoreV2>true</objectStoreV2>
+				    </cloudHubDeployment>
 				</configuration>
 			</plugin>
 			<plugin>
